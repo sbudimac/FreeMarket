@@ -5,12 +5,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
-
+import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "market_actors")
+@Table(name = "market_actor") // Changed from "market_actors" to match SQL
 public class MarketActor {
 
     @Id
@@ -41,30 +43,34 @@ public class MarketActor {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "marketActor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
     // Required by JPA
     public MarketActor() {
     }
 
-    // Convenience constructor without ID and createdAt (for creating new entities)
+    // Convenience constructor without ID and timestamps
     public MarketActor(String username, String email, String passwordHash, String contactInfo) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
         this.contactInfo = contactInfo;
-        // isVerified defaults to false
-        // createdAt will be set by @CreationTimestamp
     }
 
-    // Full constructor (mainly for testing)
-    public MarketActor(UUID id, String username, String email, String passwordHash,
-                       String contactInfo, Boolean isVerified, LocalDateTime createdAt) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.passwordHash = passwordHash;
+    // Business methods
+    public void verify() {
+        this.isVerified = true;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
-        this.isVerified = isVerified != null ? isVerified : false;
-        this.createdAt = createdAt;
+        this.updatedAt = LocalDateTime.now();
     }
 
     // Getters and setters
@@ -82,6 +88,7 @@ public class MarketActor {
 
     public void setUsername(String username) {
         this.username = username;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public String getEmail() {
@@ -90,6 +97,7 @@ public class MarketActor {
 
     public void setEmail(String email) {
         this.email = email;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public String getPasswordHash() {
@@ -98,6 +106,7 @@ public class MarketActor {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public String getContactInfo() {
@@ -106,15 +115,16 @@ public class MarketActor {
 
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
+        this.updatedAt = LocalDateTime.now();
     }
 
-    // Consistent naming for boolean field
     public Boolean getIsVerified() {
         return isVerified;
     }
 
     public void setIsVerified(Boolean verified) {
         isVerified = verified;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public LocalDateTime getCreatedAt() {
@@ -125,7 +135,22 @@ public class MarketActor {
         this.createdAt = createdAt;
     }
 
-    // Optional: toString for debugging
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
     @Override
     public String toString() {
         return "MarketActor{" +

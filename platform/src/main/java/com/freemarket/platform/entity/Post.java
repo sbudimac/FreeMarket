@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "post")
 public class Post {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -22,9 +22,9 @@ public class Post {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "market_actor_id", nullable = false) // CHANGED: user_id → market_actor_id
     @NotNull
-    private MarketActor user;
+    private MarketActor marketActor; // CHANGED: user → marketActor
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -84,8 +84,8 @@ public class Post {
     }
 
     // Minimal constructor for required fields
-    public Post(MarketActor user, PostType type, String title, String description) {
-        this.user = user;
+    public Post(MarketActor marketActor, PostType type, String title, String description) { // CHANGED
+        this.marketActor = marketActor;
         this.type = type;
         this.title = title;
         this.description = description;
@@ -93,11 +93,11 @@ public class Post {
     }
 
     // Full business constructor
-    public Post(MarketActor user, PostType type, String title, String description,
+    public Post(MarketActor marketActor, PostType type, String title, String description, // CHANGED
                 @Nullable String location, @Nullable String priceInfo,
                 @Nullable String contactInfo, @Nullable LocalDateTime expiresAt,
                 Set<String> tags) {
-        this.user = user;
+        this.marketActor = marketActor;
         this.type = type;
         this.title = title;
         this.description = description;
@@ -180,8 +180,8 @@ public class Post {
             this.post.isActive = true;
         }
 
-        public PostBuilder user(MarketActor user) {
-            post.setUser(user);
+        public PostBuilder marketActor(MarketActor marketActor) { // CHANGED
+            post.setMarketActor(marketActor);
             return this;
         }
 
@@ -232,9 +232,9 @@ public class Post {
 
         public Post build() {
             // Validate required fields
-            if (post.getUser() == null || post.getType() == null ||
+            if (post.getMarketActor() == null || post.getType() == null || // CHANGED
                     post.getTitle() == null || post.getDescription() == null) {
-                throw new IllegalStateException("Required fields (user, type, title, description) must be set");
+                throw new IllegalStateException("Required fields (marketActor, type, title, description) must be set");
             }
             return post;
         }
@@ -249,12 +249,12 @@ public class Post {
         this.id = id;
     }
 
-    public MarketActor getUser() {
-        return user;
+    public MarketActor getMarketActor() { // CHANGED
+        return marketActor;
     }
 
-    public void setUser(MarketActor user) {
-        this.user = user;
+    public void setMarketActor(MarketActor marketActor) { // CHANGED
+        this.marketActor = marketActor;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -359,19 +359,13 @@ public class Post {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Utility methods for conversion
-    public com.freemarket.platform.dto.response.PostResponse toResponse(
-            com.freemarket.platform.dto.response.UserResponse userResponse) {
-        return com.freemarket.platform.dto.response.PostResponse.fromEntity(this, userResponse);
-    }
-
     @Override
     public String toString() {
         return "Post{" +
                 "id=" + id +
                 ", type=" + type +
                 ", title='" + title + '\'' +
-                ", user=" + (user != null ? user.getId() : "null") +
+                ", marketActor=" + (marketActor != null ? marketActor.getId() : "null") + // CHANGED
                 ", isActive=" + isActive +
                 '}';
     }
