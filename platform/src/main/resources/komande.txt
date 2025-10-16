@@ -1,1 +1,4 @@
 docker-compose up -d
+
+docker exec -it postgres-freemarket bash
+psql -U admin -d freemarket
