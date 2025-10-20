@@ -45,13 +45,13 @@ public class PostResponse {
     private Boolean isActive;
 
     @NotNull
-    private UserResponse user;
+    private MarketActorResponse user;
 
     // Constructors
     public PostResponse() {}
 
     public PostResponse(UUID id, PostType type, String title, String description,
-                        UserResponse user, LocalDateTime createdAt, LocalDateTime updatedAt,
+                        MarketActorResponse user, LocalDateTime createdAt, LocalDateTime updatedAt,
                         Boolean isActive) {
         this.id = id;
         this.type = type;
@@ -105,8 +105,8 @@ public class PostResponse {
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
-    public UserResponse getUser() { return user; }
-    public void setUser(UserResponse user) { this.user = user; }
+    public MarketActorResponse getUser() { return user; }
+    public void setUser(MarketActorResponse user) { this.user = user; }
 
     // Derived fields (computed properties)
     public Boolean getIsExpired() {
@@ -193,7 +193,7 @@ public class PostResponse {
             return this;
         }
 
-        public PostResponseBuilder user(UserResponse user) {
+        public PostResponseBuilder user(MarketActorResponse user) {
             response.setUser(user);
             return this;
         }
@@ -205,7 +205,7 @@ public class PostResponse {
 
     // Utility method for conversion from Entity
     public static PostResponse fromEntity(com.freemarket.platform.entity.Post post,
-                                          UserResponse userResponse) {
+                                          MarketActorResponse marketActorResponse) {
         return PostResponse.builder()
                 .id(post.getId())
                 .type(post.getType())
@@ -219,7 +219,7 @@ public class PostResponse {
                 .updatedAt(post.getUpdatedAt())
                 .expiresAt(post.getExpiresAt())
                 .isActive(post.getIsActive())
-                .user(userResponse)
+                .user(marketActorResponse)
                 .build();
     }
 

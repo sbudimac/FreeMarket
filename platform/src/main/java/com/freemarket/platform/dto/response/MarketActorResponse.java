@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserResponse {
+public class MarketActorResponse {
     private UUID id;
     private String username;
     private String email;
@@ -29,16 +29,16 @@ public class UserResponse {
     private LocalDateTime lastActive;
 
     // Constructors
-    public UserResponse() {}
+    public MarketActorResponse() {}
 
-    public UserResponse(UUID id, String username, String email) {
+    public MarketActorResponse(UUID id, String username, String email) {
         this.id = id;
         this.username = username;
         this.email = email;
     }
 
-    public UserResponse(UUID id, String username, String email, String contactInfo,
-                        Boolean isVerified, LocalDateTime createdAt) {
+    public MarketActorResponse(UUID id, String username, String email, String contactInfo,
+                               Boolean isVerified, LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -121,11 +121,11 @@ public class UserResponse {
     }
 
     // Builder Pattern
-    public static UserResponseBuilder builder() {
-        return new UserResponseBuilder();
+    public static MarketActorResponseBuilder builder() {
+        return new MarketActorResponseBuilder();
     }
 
-    public static class UserResponseBuilder {
+    public static class MarketActorResponseBuilder {
         private UUID id;
         private String username;
         private String email;
@@ -136,53 +136,53 @@ public class UserResponse {
         private Double averageRating;
         private LocalDateTime lastActive;
 
-        public UserResponseBuilder id(UUID id) {
+        public MarketActorResponseBuilder id(UUID id) {
             this.id = id;
             return this;
         }
 
-        public UserResponseBuilder username(String username) {
+        public MarketActorResponseBuilder username(String username) {
             this.username = username;
             return this;
         }
 
-        public UserResponseBuilder email(String email) {
+        public MarketActorResponseBuilder email(String email) {
             this.email = email;
             return this;
         }
 
-        public UserResponseBuilder contactInfo(String contactInfo) {
+        public MarketActorResponseBuilder contactInfo(String contactInfo) {
             this.contactInfo = contactInfo;
             return this;
         }
 
-        public UserResponseBuilder isVerified(Boolean isVerified) {
+        public MarketActorResponseBuilder isVerified(Boolean isVerified) {
             this.isVerified = isVerified;
             return this;
         }
 
-        public UserResponseBuilder createdAt(LocalDateTime createdAt) {
+        public MarketActorResponseBuilder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
         }
 
-        public UserResponseBuilder totalPosts(Integer totalPosts) {
+        public MarketActorResponseBuilder totalPosts(Integer totalPosts) {
             this.totalPosts = totalPosts;
             return this;
         }
 
-        public UserResponseBuilder averageRating(Double averageRating) {
+        public MarketActorResponseBuilder averageRating(Double averageRating) {
             this.averageRating = averageRating;
             return this;
         }
 
-        public UserResponseBuilder lastActive(LocalDateTime lastActive) {
+        public MarketActorResponseBuilder lastActive(LocalDateTime lastActive) {
             this.lastActive = lastActive;
             return this;
         }
 
-        public UserResponse build() {
-            UserResponse response = new UserResponse();
+        public MarketActorResponse build() {
+            MarketActorResponse response = new MarketActorResponse();
             response.setId(this.id);
             response.setUsername(this.username);
             response.setEmail(this.email);
@@ -201,7 +201,7 @@ public class UserResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserResponse that = (UserResponse) o;
+        MarketActorResponse that = (MarketActorResponse) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(username, that.username) &&
                 Objects.equals(email, that.email);
@@ -229,13 +229,13 @@ public class UserResponse {
     }
 
     // Convenience static factory methods
-    public static UserResponse fromBasicInfo(UUID id, String username, String email) {
-        return new UserResponse(id, username, email);
+    public static MarketActorResponse fromBasicInfo(UUID id, String username, String email) {
+        return new MarketActorResponse(id, username, email);
     }
 
-    public static UserResponse createMinimal(UUID id, String username, String email,
-                                             Boolean isVerified, LocalDateTime createdAt) {
-        return UserResponse.builder()
+    public static MarketActorResponse createMinimal(UUID id, String username, String email,
+                                                    Boolean isVerified, LocalDateTime createdAt) {
+        return MarketActorResponse.builder()
                 .id(id)
                 .username(username)
                 .email(email)
