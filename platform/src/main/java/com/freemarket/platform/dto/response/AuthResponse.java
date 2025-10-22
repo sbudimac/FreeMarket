@@ -13,19 +13,19 @@ public class AuthResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime expiresAt; // Exact expiration timestamp
 
-    private UserResponse user;
+    private MarketActorResponse user;
 
     // Constructors
     public AuthResponse() {}
 
     // Basic constructor
-    public AuthResponse(String accessToken, UserResponse user) {
+    public AuthResponse(String accessToken, MarketActorResponse user) {
         this.accessToken = accessToken;
         this.user = user;
     }
 
     // Full constructor
-    public AuthResponse(String accessToken, UserResponse user, Long expiresIn,
+    public AuthResponse(String accessToken, MarketActorResponse user, Long expiresIn,
                         LocalDateTime expiresAt, String refreshToken) {
         this.accessToken = accessToken;
         this.user = user;
@@ -35,7 +35,7 @@ public class AuthResponse {
     }
 
     // Constructor with expiresIn
-    public AuthResponse(String accessToken, UserResponse user, Long expiresIn) {
+    public AuthResponse(String accessToken, MarketActorResponse user, Long expiresIn) {
         this.accessToken = accessToken;
         this.user = user;
         this.expiresIn = expiresIn;
@@ -90,11 +90,11 @@ public class AuthResponse {
         this.expiresAt = expiresAt;
     }
 
-    public UserResponse getUser() {
+    public MarketActorResponse getUser() {
         return user;
     }
 
-    public void setUser(UserResponse user) {
+    public void setUser(MarketActorResponse user) {
         this.user = user;
     }
 
@@ -106,7 +106,7 @@ public class AuthResponse {
     // Builder class
     public static class Builder {
         private String accessToken;
-        private UserResponse user;
+        private MarketActorResponse user;
         private Long expiresIn;
         private LocalDateTime expiresAt;
         private String refreshToken;
@@ -118,7 +118,7 @@ public class AuthResponse {
             return this;
         }
 
-        public Builder user(UserResponse user) {
+        public Builder user(MarketActorResponse user) {
             this.user = user;
             return this;
         }
