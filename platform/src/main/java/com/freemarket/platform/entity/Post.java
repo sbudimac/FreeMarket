@@ -3,6 +3,8 @@ package com.freemarket.platform.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,57 +18,63 @@ import java.util.UUID;
 @Entity
 @Table(name = "post")
 public class Post {
+
+    @Getter
+    @Setter
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "market_actor_id", nullable = false) // CHANGED: user_id → market_actor_id
+    @JoinColumn(name = "market_actor_id", nullable = false)
     @NotNull
     private MarketActor marketActor; // CHANGED: user → marketActor
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @NotNull
     private PostType type;
 
+    @Getter
     @Column(nullable = false, length = 200)
     @Size(min = 5, max = 200)
     @NotNull
     private String title;
 
+    @Getter
     @Column(nullable = false, columnDefinition = "TEXT")
     @Size(min = 10, max = 5000)
     @NotNull
     private String description;
 
     @Column(length = 100)
-    @Nullable
     private String location;
 
     @Column(name = "price_info", length = 100)
-    @Nullable
     private String priceInfo;
 
     @Column(name = "contact_info", columnDefinition = "TEXT")
-    @Nullable
     private String contactInfo;
 
+    @Getter
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     @NotNull
     private LocalDateTime createdAt;
 
+    @Setter
+    @Getter
     @UpdateTimestamp
     @Column(name = "updated_at")
     @NotNull
     private LocalDateTime updatedAt;
 
     @Column(name = "expires_at")
-    @Nullable
     private LocalDateTime expiresAt;
 
+    @Getter
     @Column(name = "is_active")
     @NotNull
     private Boolean isActive = true;
@@ -79,12 +87,10 @@ public class Post {
     @Column(name = "tag")
     private Set<String> tags = new HashSet<>();
 
-    // Default constructor (required by JPA)
-    public Post() {
-    }
+    public Post() {}
 
     // Minimal constructor for required fields
-    public Post(MarketActor marketActor, PostType type, String title, String description) { // CHANGED
+    public Post(MarketActor marketActor, PostType type, String title, String description) {
         this.marketActor = marketActor;
         this.type = type;
         this.title = title;
@@ -93,7 +99,7 @@ public class Post {
     }
 
     // Full business constructor
-    public Post(MarketActor marketActor, PostType type, String title, String description, // CHANGED
+    public Post(MarketActor marketActor, PostType type, String title, String description,
                 @Nullable String location, @Nullable String priceInfo,
                 @Nullable String contactInfo, @Nullable LocalDateTime expiresAt,
                 Set<String> tags) {
@@ -180,7 +186,7 @@ public class Post {
             this.post.isActive = true;
         }
 
-        public PostBuilder marketActor(MarketActor marketActor) { // CHANGED
+        public PostBuilder marketActor(MarketActor marketActor) {
             post.setMarketActor(marketActor);
             return this;
         }
@@ -232,7 +238,7 @@ public class Post {
 
         public Post build() {
             // Validate required fields
-            if (post.getMarketActor() == null || post.getType() == null || // CHANGED
+            if (post.getMarketActor() == null || post.getType() == null ||
                     post.getTitle() == null || post.getDescription() == null) {
                 throw new IllegalStateException("Required fields (marketActor, type, title, description) must be set");
             }
@@ -241,25 +247,9 @@ public class Post {
     }
 
     // Getters and setters
-    public UUID getId() {
-        return id;
-    }
-
-    protected void setId(UUID id) {
-        this.id = id;
-    }
-
-    public MarketActor getMarketActor() { // CHANGED
-        return marketActor;
-    }
-
     public void setMarketActor(MarketActor marketActor) { // CHANGED
         this.marketActor = marketActor;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public PostType getType() {
-        return type;
     }
 
     public void setType(PostType type) {
@@ -267,17 +257,9 @@ public class Post {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public void setTitle(String title) {
         this.title = title;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public void setDescription(String description) {
@@ -315,20 +297,8 @@ public class Post {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
     protected void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Nullable
@@ -339,10 +309,6 @@ public class Post {
     public void setExpiresAt(@Nullable LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
     }
 
     public void setIsActive(Boolean isActive) {
