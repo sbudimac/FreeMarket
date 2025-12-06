@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
@@ -11,10 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "market_actor") // Changed from "market_actors" to match SQL
 public class MarketActor {
 
+    @Setter
     @Id
     @GeneratedValue(generator = "UUID")
     private UUID id;
@@ -39,20 +43,21 @@ public class MarketActor {
     @Column(nullable = false)
     private Boolean isVerified = false;
 
+    @Setter
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Setter
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Setter
     @OneToMany(mappedBy = "marketActor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
-    // Required by JPA
-    public MarketActor() {
-    }
+    public MarketActor() {}
 
     // Convenience constructor without ID and timestamps
     public MarketActor(String username, String email, String passwordHash, String contactInfo) {
@@ -74,25 +79,9 @@ public class MarketActor {
     }
 
     // Getters and setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
     public void setUsername(String username) {
         this.username = username;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public void setEmail(String email) {
@@ -100,17 +89,9 @@ public class MarketActor {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public String getContactInfo() {
-        return contactInfo;
     }
 
     public void setContactInfo(String contactInfo) {
@@ -118,37 +99,9 @@ public class MarketActor {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Boolean getIsVerified() {
-        return isVerified;
-    }
-
     public void setIsVerified(Boolean verified) {
         isVerified = verified;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
     }
 
     @Override
