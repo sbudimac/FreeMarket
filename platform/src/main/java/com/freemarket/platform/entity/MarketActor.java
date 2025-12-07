@@ -9,9 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Entity
@@ -57,6 +55,14 @@ public class MarketActor {
     @OneToMany(mappedBy = "marketActor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "market_actor_roles",
+        joinColumns = @JoinColumn(name = "market_actor_id")
+    )
+    @Column(name = "role")
+    private Set<String> roles = new HashSet<>();
+
     public MarketActor() {}
 
     // Convenience constructor without ID and timestamps
@@ -76,6 +82,10 @@ public class MarketActor {
     public void updateContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addRole(String role) {
+        this.roles.add(role);
     }
 
     // Getters and setters
