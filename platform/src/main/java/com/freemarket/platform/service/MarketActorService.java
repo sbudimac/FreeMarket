@@ -27,57 +27,6 @@ public class MarketActorService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // REGISTRATION & AUTHENTICATION operations
-    public MarketActor registerMarketActor(RegisterRequest registerRequest) {
-        validateNewMarketActor(registerRequest.getUsername(), registerRequest.getEmail(), registerRequest.getPassword());
-
-        MarketActor marketActor = new MarketActor();
-        marketActor.setUsername(registerRequest.getUsername());
-        marketActor.setEmail(registerRequest.getEmail());
-        marketActor.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
-        marketActor.setContactInfo(registerRequest.getContactInfo());
-        marketActor.setIsVerified(false); // Default to unverified
-
-        return marketActorRepository.save(marketActor);
-    }
-
-    public boolean authenticate(LoginRequest loginRequest) {
-        Optional<MarketActor> marketActorOpt = marketActorRepository.findByUsername(loginRequest.getUsername());
-        if (marketActorOpt.isEmpty()) {
-            return false;
-        }
-
-        MarketActor marketActor = marketActorOpt.get();
-        return passwordEncoder.matches(loginRequest.getPassword(), marketActor.getPasswordHash());
-    }
-
-    public Optional<MarketActor> authenticateAndGetMarketActor(LoginRequest loginRequest) {
-        Optional<MarketActor> marketActorOpt = marketActorRepository.findByUsername(loginRequest.getUsername());
-        if (marketActorOpt.isEmpty()) {
-            return Optional.empty();
-        }
-
-        MarketActor marketActor = marketActorOpt.get();
-        if (passwordEncoder.matches(loginRequest.getPassword(), marketActor.getPasswordHash())) {
-            return Optional.of(marketActor);
-        }
-        return Optional.empty();
-    }
-
-    // CREATE operations
-    public MarketActor createMarketActor(String username, String email, String plainPassword, String contactInfo) {
-        validateNewMarketActor(username, email, plainPassword);
-
-        MarketActor marketActor = new MarketActor();
-        marketActor.setUsername(username);
-        marketActor.setEmail(email);
-        marketActor.setPasswordHash(passwordEncoder.encode(plainPassword));
-        marketActor.setContactInfo(contactInfo);
-        marketActor.setIsVerified(false);
-
-        return marketActorRepository.save(marketActor);
-    }
-
     // READ operations
     public Optional<MarketActor> findById(UUID id) {
         return marketActorRepository.findById(id);
@@ -186,16 +135,6 @@ public class MarketActorService {
         return marketActorRepository.countByIsVerified(false);
     }
 
-    public boolean authenticate(String username, String plainPassword) {
-        Optional<MarketActor> marketActorOpt = marketActorRepository.findByUsername(username);
-        if (marketActorOpt.isEmpty()) {
-            return false;
-        }
-
-        MarketActor marketActor = marketActorOpt.get();
-        return passwordEncoder.matches(plainPassword, marketActor.getPasswordHash());
-    }
-
     // DTO CONVERSION operations
     public MarketActorResponse convertToMarketActorResponse(MarketActor marketActor) {
         return MarketActorResponse.builder()
@@ -222,34 +161,6 @@ public class MarketActorService {
     public Optional<MarketActorResponse> findMarketActorResponseByUsername(String username) {
         return marketActorRepository.findByUsername(username)
                 .map(this::convertToMarketActorResponse);
-    }
-
-    // PRIVATE helper methods
-    private void validateNewMarketActor(String username, String email, String password) {
-        if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
-        }
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be null or empty");
-        }
-        if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
-        }
-        if (marketActorRepository.existsByUsername(username)) {
-            throw new RuntimeException("Username already exists: " + username);
-        }
-        if (marketActorRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email already exists: " + email);
-        }
-        if (username.length() < 3 || username.length() > 50) {
-            throw new IllegalArgumentException("Username must be between 3 and 50 characters");
-        }
-        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
-        if (password.length() < 6) {
-            throw new IllegalArgumentException("Password must be at least 6 characters");
-        }
     }
 
     // Bulk operations
