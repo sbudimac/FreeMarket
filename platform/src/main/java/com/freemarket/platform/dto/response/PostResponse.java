@@ -3,6 +3,7 @@ package com.freemarket.platform.dto.response;
 import com.freemarket.platform.entity.PostType;
 import org.springframework.lang.Nullable;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -31,6 +32,10 @@ public class PostResponse {
     private String contactInfo;
 
     private Set<String> tags;
+
+    @Nullable
+    private Set<@Pattern(regexp = "^(http|https)://.*\\.(jpg|jpeg|png|gif|webp|bmp)$",
+            message = "Invalid image URL format") String> images;
 
     @NotNull
     private LocalDateTime createdAt;
@@ -62,6 +67,7 @@ public class PostResponse {
         this.updatedAt = updatedAt;
         this.isActive = isActive;
         this.tags = Set.of();
+        this.images = Set.of(); // NEW: Initialize empty set
     }
 
     // Getters and Setters
@@ -92,6 +98,10 @@ public class PostResponse {
     public Set<String> getTags() { return tags; }
     public void setTags(Set<String> tags) { this.tags = tags; }
 
+    @Nullable
+    public Set<String> getImages() { return images; }
+    public void setImages(@Nullable Set<String> images) { this.images = images; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
@@ -119,6 +129,20 @@ public class PostResponse {
 
     public Boolean hasTags() {
         return tags != null && !tags.isEmpty();
+    }
+
+    public Boolean hasImages() {
+        return images != null && !images.isEmpty();
+    }
+
+    // Get first image URL for thumbnails
+    @Nullable
+    public String getFirstImageUrl() {
+        if (hasImages()) {
+            assert images != null;
+            return images.iterator().next();
+        }
+        return null;
     }
 
     // Builder pattern for easy creation
@@ -173,6 +197,11 @@ public class PostResponse {
             return this;
         }
 
+        public PostResponseBuilder images(Set<String> images) {
+            response.setImages(images);
+            return this;
+        }
+
         public PostResponseBuilder createdAt(LocalDateTime createdAt) {
             response.setCreatedAt(createdAt);
             return this;
@@ -215,6 +244,7 @@ public class PostResponse {
                 .priceInfo(post.getPriceInfo())
                 .contactInfo(post.getContactInfo())
                 .tags(post.getTags())
+                .images(post.getImages()) // NEW: Include images
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .expiresAt(post.getExpiresAt())
@@ -231,6 +261,7 @@ public class PostResponse {
                 ", title='" + title + '\'' +
                 ", user=" + (user != null ? user.getUsername() : "null") +
                 ", isActive=" + isActive +
+                ", imagesCount=" + (images != null ? images.size() : 0) +
                 '}';
     }
 

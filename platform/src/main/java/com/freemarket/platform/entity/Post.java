@@ -3,6 +3,7 @@ package com.freemarket.platform.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -79,6 +80,20 @@ public class Post {
     @Column(name = "tag")
     private Set<String> tags = new HashSet<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "post_images",
+            joinColumns = @JoinColumn(name = "post_id")
+    )
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    @Size(max = 10, message = "Cannot have more than 10 images") // Limit number of images
+    @jakarta.validation.constraints.Pattern.List({
+            @Pattern(regexp = "^(http|https)://.*$", message = "Image URL must start with http:// or https://"),
+            @Pattern(regexp = "^.*\\.(jpg|jpeg|png|gif|webp|bmp)$", message = "Image URL must end with a valid image extension (jpg, jpeg, png, gif, webp, bmp)")
+    })
+    @Nullable
+    private Set<String> images = new HashSet<>();
+
     // Default constructor (required by JPA)
     public Post() {
     }
@@ -90,13 +105,14 @@ public class Post {
         this.title = title;
         this.description = description;
         this.isActive = true;
+        this.images = new HashSet<>();
     }
 
     // Full business constructor
     public Post(MarketActor marketActor, PostType type, String title, String description, // CHANGED
                 @Nullable String location, @Nullable String priceInfo,
                 @Nullable String contactInfo, @Nullable LocalDateTime expiresAt,
-                Set<String> tags) {
+                Set<String> tags, @Nullable Set<String> images) { // UPDATED: Added images parameter
         this.marketActor = marketActor;
         this.type = type;
         this.title = title;
@@ -106,6 +122,7 @@ public class Post {
         this.contactInfo = contactInfo;
         this.expiresAt = expiresAt;
         this.tags = tags != null ? new HashSet<>(tags) : new HashSet<>();
+        this.images = images != null ? new HashSet<>(images) : new HashSet<>();
         this.isActive = true;
     }
 
@@ -120,6 +137,19 @@ public class Post {
 
     public boolean hasTags() {
         return tags != null && !tags.isEmpty();
+    }
+
+    public boolean hasImages() {
+        return images != null && !images.isEmpty();
+    }
+
+    @Nullable
+    public String getFirstImageUrl() {
+        if (hasImages()) {
+            assert images != null;
+            return images.iterator().next();
+        }
+        return null;
     }
 
     public void deactivate() {
@@ -167,6 +197,48 @@ public class Post {
         }
     }
 
+    public void addImage(String imageUrl) {
+        if (this.images == null) {
+            this.images = new HashSet<>();
+        }
+        this.images.add(imageUrl);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addImages(Set<String> newImages) {
+        if (this.images == null) {
+            this.images = new HashSet<>();
+        }
+        this.images.addAll(newImages);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void removeImage(String imageUrl) {
+        if (this.images != null) {
+            this.images.remove(imageUrl);
+            this.updatedAt = LocalDateTime.now();
+        }
+    }
+
+    public void clearImages() {
+        if (this.images != null) {
+            this.images.clear();
+            this.updatedAt = LocalDateTime.now();
+        }
+    }
+
+    public boolean hasValidImages() {
+        if (!hasImages()) return true;
+
+        String imageUrlPattern = "^(http|https)://.*\\.(jpg|jpeg|png|gif|webp|bmp)$";
+        for (String imageUrl : images) {
+            if (!imageUrl.matches(imageUrlPattern)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Builder pattern for fluent creation
     public static PostBuilder builder() {
         return new PostBuilder();
@@ -178,6 +250,7 @@ public class Post {
         public PostBuilder() {
             this.post = new Post();
             this.post.isActive = true;
+            this.post.images = new HashSet<>();
         }
 
         public PostBuilder marketActor(MarketActor marketActor) { // CHANGED
@@ -225,6 +298,11 @@ public class Post {
             return this;
         }
 
+        public PostBuilder images(Set<String> images) {
+            post.setImages(images);
+            return this;
+        }
+
         public PostBuilder isActive(Boolean isActive) {
             post.setIsActive(isActive);
             return this;
@@ -236,6 +314,12 @@ public class Post {
                     post.getTitle() == null || post.getDescription() == null) {
                 throw new IllegalStateException("Required fields (marketActor, type, title, description) must be set");
             }
+
+            // Validate images if present
+            if (post.hasImages() && !post.hasValidImages()) {
+                throw new IllegalStateException("All image URLs must be valid URLs ending with image extensions (jpg, jpeg, png, gif, webp, bmp)");
+            }
+
             return post;
         }
     }
@@ -359,6 +443,15 @@ public class Post {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public Set<String> getImages() {
+        return new HashSet<>(images); // Return defensive copy
+    }
+
+    public void setImages(@Nullable Set<String> images) {
+        this.images = images != null ? new HashSet<>(images) : new HashSet<>();
+        this.updatedAt = LocalDateTime.now();
+    }
+
     @Override
     public String toString() {
         return "Post{" +
@@ -367,6 +460,7 @@ public class Post {
                 ", title='" + title + '\'' +
                 ", marketActor=" + (marketActor != null ? marketActor.getId() : "null") + // CHANGED
                 ", isActive=" + isActive +
+                ", imagesCount=" + (images != null ? images.size() : 0) +
                 '}';
     }
 

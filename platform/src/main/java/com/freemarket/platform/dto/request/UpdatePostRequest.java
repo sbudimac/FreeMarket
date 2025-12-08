@@ -1,6 +1,8 @@
 package com.freemarket.platform.dto.request;
 
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
+import org.springframework.lang.Nullable;
 
 import java.util.Set;
 
@@ -22,6 +24,13 @@ public class UpdatePostRequest {
     private Set<String> tags;
 
     private Boolean isActive;
+
+    @Size(max = 10, message = "Cannot have more than 10 images")
+    @Nullable
+    private Set<@Pattern(
+            regexp = "^(http|https)://.*\\.(jpg|jpeg|png|gif|webp|bmp)$",
+            message = "Each image URL must be a valid URL ending with jpg, jpeg, png, gif, webp, or bmp"
+    ) String> images;
 
     // Constructors
     public UpdatePostRequest() {}
@@ -48,6 +57,20 @@ public class UpdatePostRequest {
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
+    @Nullable
+    public Set<String> getImages() { return images; }
+    public void setImages(@Nullable Set<String> images) { this.images = images; }
+
+    public boolean hasImages() {
+        return images != null;
+    }
+
+    public boolean hasUpdates() {
+        return title != null || description != null || location != null ||
+                priceInfo != null || contactInfo != null || tags != null ||
+                isActive != null || images != null;
+    }
+
     @Override
     public String toString() {
         return "UpdatePostRequest{" +
@@ -57,6 +80,7 @@ public class UpdatePostRequest {
                 ", priceInfo='" + priceInfo + '\'' +
                 ", contactInfo='" + contactInfo + '\'' +
                 ", tags=" + tags +
+                ", imagesCount=" + (images != null ? images.size() : 0) + // NEW: Include image count
                 ", isActive=" + isActive +
                 '}';
     }

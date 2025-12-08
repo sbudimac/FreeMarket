@@ -4,6 +4,7 @@ import com.freemarket.platform.entity.PostType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -29,6 +30,12 @@ public class CreatePostRequest {
 
     @Size(max = 20, message = "Cannot have more than 20 tags")
     private Set<String> tags;
+
+    @Size(max = 10, message = "Cannot have more than 10 images")
+    private Set<@Pattern(
+            regexp = "^(http|https)://.*\\.(jpg|jpeg|png|gif|webp|bmp)$",
+            message = "Each image URL must be a valid URL ending with jpg, jpeg, png, gif, webp, or bmp"
+    ) String> images;
 
     private LocalDateTime expiresAt; // Optional expiration
 
@@ -56,6 +63,10 @@ public class CreatePostRequest {
 
     public Set<String> getTags() { return tags; }
     public void setTags(Set<String> tags) { this.tags = tags; }
+
+    // NEW: Images getter and setter
+    public Set<String> getImages() { return images; }
+    public void setImages(Set<String> images) { this.images = images; }
 
     public LocalDateTime getExpiresAt() { return expiresAt; }
     public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }

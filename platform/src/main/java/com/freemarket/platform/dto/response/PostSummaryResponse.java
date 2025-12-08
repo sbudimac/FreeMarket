@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @JsonPropertyOrder({
         "id", "type", "title", "description", "location",
-        "priceInfo", "tags", "createdAt", "username"
+        "priceInfo", "tags", "images", "createdAt", "username" // UPDATED: Added images
 })
 public class PostSummaryResponse {
     private UUID id;
@@ -19,6 +19,7 @@ public class PostSummaryResponse {
     private String location;
     private String priceInfo;
     private Set<String> tags;
+    private Set<String> images; // NEW: Images field
     private LocalDateTime createdAt;
     private String username;
 
@@ -34,6 +35,7 @@ public class PostSummaryResponse {
         this.location = builder.location;
         this.priceInfo = builder.priceInfo;
         this.tags = builder.tags;
+        this.images = builder.images; // NEW: Initialize images
         this.createdAt = builder.createdAt;
         this.username = builder.username;
     }
@@ -60,6 +62,9 @@ public class PostSummaryResponse {
     public Set<String> getTags() { return tags; }
     public void setTags(Set<String> tags) { this.tags = tags; }
 
+    public Set<String> getImages() { return images; }
+    public void setImages(Set<String> images) { this.images = images; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
@@ -72,6 +77,18 @@ public class PostSummaryResponse {
         return description.length() > 150
                 ? description.substring(0, 147) + "..."
                 : description;
+    }
+
+    // Get first image URL for thumbnails
+    public String getFirstImageUrl() {
+        if (images != null && !images.isEmpty()) {
+            return images.iterator().next();
+        }
+        return null;
+    }
+
+    public boolean hasImages() {
+        return images != null && !images.isEmpty();
     }
 
     // Builder pattern
@@ -87,6 +104,7 @@ public class PostSummaryResponse {
         private String location;
         private String priceInfo;
         private Set<String> tags;
+        private Set<String> images; // NEW: Images builder field
         private LocalDateTime createdAt;
         private String username;
 
@@ -125,6 +143,12 @@ public class PostSummaryResponse {
             return this;
         }
 
+        // NEW: Images builder method
+        public Builder images(Set<String> images) {
+            this.images = images;
+            return this;
+        }
+
         public Builder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
@@ -151,6 +175,7 @@ public class PostSummaryResponse {
                 ", location='" + location + '\'' +
                 ", priceInfo='" + priceInfo + '\'' +
                 ", tags=" + tags +
+                ", imagesCount=" + (images != null ? images.size() : 0) + // NEW: Include image count
                 ", createdAt=" + createdAt +
                 ", username='" + username + '\'' +
                 '}';
