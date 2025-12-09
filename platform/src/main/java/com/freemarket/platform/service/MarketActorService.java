@@ -7,6 +7,7 @@ import com.freemarket.platform.entity.MarketActor;
 import com.freemarket.platform.repository.MarketActorRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class MarketActorService {
         return marketActorRepository.findById(id);
     }
 
+    @PreAuthorize("#username == authentication.name or hasRole('ADMIN')")
     public Optional<MarketActor> findByUsername(String username) {
         return marketActorRepository.findByUsername(username);
     }
@@ -40,14 +42,17 @@ public class MarketActorService {
         return marketActorRepository.findByEmail(email);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<MarketActor> findAll() {
         return marketActorRepository.findAll();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<MarketActor> findVerifiedActors() {
         return marketActorRepository.findByIsVerifiedTrue();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<MarketActor> findUnverifiedActors() {
         return marketActorRepository.findByIsVerifiedFalse();
     }
@@ -61,6 +66,7 @@ public class MarketActorService {
     }
 
     // UPDATE operations
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public MarketActor updateContactInfo(UUID id, String newContactInfo) {
         MarketActor marketActor = marketActorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("MarketActor not found with id: " + id));
@@ -69,6 +75,7 @@ public class MarketActorService {
         return marketActorRepository.save(marketActor);
     }
 
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public MarketActor updateEmail(UUID id, String newEmail) {
         if (marketActorRepository.existsByEmail(newEmail)) {
             throw new RuntimeException("Email already exists: " + newEmail);
@@ -89,6 +96,7 @@ public class MarketActorService {
         return marketActorRepository.save(marketActor);
     }
 
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public MarketActor changePassword(UUID id, String newPlainPassword) {
         MarketActor marketActor = marketActorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("MarketActor not found with id: " + id));
@@ -98,6 +106,7 @@ public class MarketActorService {
     }
 
     // DELETE operations
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteMarketActor(UUID id) {
         if (!marketActorRepository.existsById(id)) {
             throw new RuntimeException("MarketActor not found with id: " + id);
@@ -123,6 +132,7 @@ public class MarketActorService {
     }
 
     // BUSINESS LOGIC operations
+    @PreAuthorize("hasRole('ADMIN')")
     public long getTotalMarketActorsCount() {
         return marketActorRepository.count();
     }
@@ -164,6 +174,7 @@ public class MarketActorService {
     }
 
     // Bulk operations
+    @PreAuthorize("hasRole('ADMIN')")
     public List<MarketActor> bulkVerifyMarketActors(List<UUID> ids) {
         List<MarketActor> marketActors = marketActorRepository.findAllById(ids);
 
@@ -180,6 +191,7 @@ public class MarketActorService {
     }
 
     // Profile completeness check (for future use)
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public boolean isProfileComplete(UUID id) {
         MarketActor marketActor = marketActorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("MarketActor not found with id: " + id));
