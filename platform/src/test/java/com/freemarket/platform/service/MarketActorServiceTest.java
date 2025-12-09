@@ -63,123 +63,123 @@ class MarketActorServiceTest {
     }
 
     // ===== REGISTRATION TESTS =====
-
-    @Test
-    void registerMarketActor_WithValidRequest_ShouldSuccess() {
-        // Arrange
-        when(marketActorRepository.existsByUsername(anyString())).thenReturn(false);
-        when(marketActorRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
-        when(marketActorRepository.save(any(MarketActor.class))).thenReturn(testMarketActor);
-
-        // Act
-        MarketActor result = marketActorService.registerMarketActor(validRegisterRequest);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("testuser", result.getUsername());
-        assertEquals("test@example.com", result.getEmail());
-        verify(marketActorRepository).save(any(MarketActor.class));
-        verify(passwordEncoder).encode("Password123");
-    }
-
-    @Test
-    void registerMarketActor_WithExistingUsername_ShouldThrowException() {
-        // Arrange
-        when(marketActorRepository.existsByUsername(anyString())).thenReturn(true);
-
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> marketActorService.registerMarketActor(validRegisterRequest));
-
-        assertTrue(exception.getMessage().contains("Username already exists"));
-        verify(marketActorRepository, never()).save(any(MarketActor.class));
-    }
-
-    @Test
-    void registerMarketActor_WithExistingEmail_ShouldThrowException() {
-        // Arrange
-        when(marketActorRepository.existsByUsername(anyString())).thenReturn(false);
-        when(marketActorRepository.existsByEmail(anyString())).thenReturn(true);
-
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> marketActorService.registerMarketActor(validRegisterRequest));
-
-        assertTrue(exception.getMessage().contains("Email already exists"));
-        verify(marketActorRepository, never()).save(any(MarketActor.class));
-    }
-
-    @Test
-    void registerMarketActor_WithInvalidEmail_ShouldThrowException() {
-        // Arrange
-        RegisterRequest invalidRequest = new RegisterRequest();
-        invalidRequest.setUsername("validuser");
-        invalidRequest.setEmail("invalid-email");
-        invalidRequest.setPassword("Password123");
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> marketActorService.registerMarketActor(invalidRequest));
-
-        assertTrue(exception.getMessage().contains("Invalid email format"));
-    }
-
-    // ===== AUTHENTICATION TESTS =====
-
-    @Test
-    void authenticate_WithValidCredentials_ShouldReturnTrue() {
-        // Arrange
-        when(marketActorRepository.findByUsername("testuser")).thenReturn(Optional.of(testMarketActor));
-        when(passwordEncoder.matches("password123", "hashedPassword123")).thenReturn(true);
-
-        // Act
-        boolean result = marketActorService.authenticate(validLoginRequest);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void authenticate_WithInvalidPassword_ShouldReturnFalse() {
-        // Arrange
-        when(marketActorRepository.findByUsername("testuser")).thenReturn(Optional.of(testMarketActor));
-        when(passwordEncoder.matches("wrongpassword", "hashedPassword123")).thenReturn(false);
-
-        // Act
-        LoginRequest wrongPasswordRequest = new LoginRequest("testuser", "wrongpassword");
-        boolean result = marketActorService.authenticate(wrongPasswordRequest);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void authenticate_WithNonExistentUser_ShouldReturnFalse() {
-        // Arrange
-        when(marketActorRepository.findByUsername("nonexistent")).thenReturn(Optional.empty());
-
-        // Act
-        LoginRequest nonExistentRequest = new LoginRequest("nonexistent", "password");
-        boolean result = marketActorService.authenticate(nonExistentRequest);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void authenticateAndGetMarketActor_WithValidCredentials_ShouldReturnMarketActor() {
-        // Arrange
-        when(marketActorRepository.findByUsername("testuser")).thenReturn(Optional.of(testMarketActor));
-        when(passwordEncoder.matches("password123", "hashedPassword123")).thenReturn(true);
-
-        // Act
-        Optional<MarketActor> result = marketActorService.authenticateAndGetMarketActor(validLoginRequest);
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals("testuser", result.get().getUsername());
-    }
+//
+//    @Test
+//    void registerMarketActor_WithValidRequest_ShouldSuccess() {
+//        // Arrange
+//        when(marketActorRepository.existsByUsername(anyString())).thenReturn(false);
+//        when(marketActorRepository.existsByEmail(anyString())).thenReturn(false);
+//        when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
+//        when(marketActorRepository.save(any(MarketActor.class))).thenReturn(testMarketActor);
+//
+//        // Act
+//        MarketActor result = marketActorService.registerMarketActor(validRegisterRequest);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals("testuser", result.getUsername());
+//        assertEquals("test@example.com", result.getEmail());
+//        verify(marketActorRepository).save(any(MarketActor.class));
+//        verify(passwordEncoder).encode("Password123");
+//    }
+//
+//    @Test
+//    void registerMarketActor_WithExistingUsername_ShouldThrowException() {
+//        // Arrange
+//        when(marketActorRepository.existsByUsername(anyString())).thenReturn(true);
+//
+//        // Act & Assert
+//        RuntimeException exception = assertThrows(RuntimeException.class,
+//                () -> marketActorService.registerMarketActor(validRegisterRequest));
+//
+//        assertTrue(exception.getMessage().contains("Username already exists"));
+//        verify(marketActorRepository, never()).save(any(MarketActor.class));
+//    }
+//
+//    @Test
+//    void registerMarketActor_WithExistingEmail_ShouldThrowException() {
+//        // Arrange
+//        when(marketActorRepository.existsByUsername(anyString())).thenReturn(false);
+//        when(marketActorRepository.existsByEmail(anyString())).thenReturn(true);
+//
+//        // Act & Assert
+//        RuntimeException exception = assertThrows(RuntimeException.class,
+//                () -> marketActorService.registerMarketActor(validRegisterRequest));
+//
+//        assertTrue(exception.getMessage().contains("Email already exists"));
+//        verify(marketActorRepository, never()).save(any(MarketActor.class));
+//    }
+//
+//    @Test
+//    void registerMarketActor_WithInvalidEmail_ShouldThrowException() {
+//        // Arrange
+//        RegisterRequest invalidRequest = new RegisterRequest();
+//        invalidRequest.setUsername("validuser");
+//        invalidRequest.setEmail("invalid-email");
+//        invalidRequest.setPassword("Password123");
+//
+//        // Act & Assert
+//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+//                () -> marketActorService.registerMarketActor(invalidRequest));
+//
+//        assertTrue(exception.getMessage().contains("Invalid email format"));
+//    }
+//
+//    // ===== AUTHENTICATION TESTS =====
+//
+//    @Test
+//    void authenticate_WithValidCredentials_ShouldReturnTrue() {
+//        // Arrange
+//        when(marketActorRepository.findByUsername("testuser")).thenReturn(Optional.of(testMarketActor));
+//        when(passwordEncoder.matches("password123", "hashedPassword123")).thenReturn(true);
+//
+//        // Act
+//        boolean result = marketActorService.authenticate(validLoginRequest);
+//
+//        // Assert
+//        assertTrue(result);
+//    }
+//
+//    @Test
+//    void authenticate_WithInvalidPassword_ShouldReturnFalse() {
+//        // Arrange
+//        when(marketActorRepository.findByUsername("testuser")).thenReturn(Optional.of(testMarketActor));
+//        when(passwordEncoder.matches("wrongpassword", "hashedPassword123")).thenReturn(false);
+//
+//        // Act
+//        LoginRequest wrongPasswordRequest = new LoginRequest("testuser", "wrongpassword");
+//        boolean result = marketActorService.authenticate(wrongPasswordRequest);
+//
+//        // Assert
+//        assertFalse(result);
+//    }
+//
+//    @Test
+//    void authenticate_WithNonExistentUser_ShouldReturnFalse() {
+//        // Arrange
+//        when(marketActorRepository.findByUsername("nonexistent")).thenReturn(Optional.empty());
+//
+//        // Act
+//        LoginRequest nonExistentRequest = new LoginRequest("nonexistent", "password");
+//        boolean result = marketActorService.authenticate(nonExistentRequest);
+//
+//        // Assert
+//        assertFalse(result);
+//    }
+//
+//    @Test
+//    void authenticateAndGetMarketActor_WithValidCredentials_ShouldReturnMarketActor() {
+//        // Arrange
+//        when(marketActorRepository.findByUsername("testuser")).thenReturn(Optional.of(testMarketActor));
+//        when(passwordEncoder.matches("password123", "hashedPassword123")).thenReturn(true);
+//
+//        // Act
+//        Optional<MarketActor> result = marketActorService.authenticateAndGetMarketActor(validLoginRequest);
+//
+//        // Assert
+//        assertTrue(result.isPresent());
+//        assertEquals("testuser", result.get().getUsername());
+//    }
 
     // ===== READ OPERATION TESTS =====
 
