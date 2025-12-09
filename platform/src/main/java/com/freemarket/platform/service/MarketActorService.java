@@ -137,14 +137,14 @@ public class MarketActorService {
 
     // DTO CONVERSION operations
     public MarketActorResponse convertToMarketActorResponse(MarketActor marketActor) {
-        return MarketActorResponse.builder()
-                .id(marketActor.getId())
-                .username(marketActor.getUsername())
-                .email(marketActor.getEmail())
-                .contactInfo(marketActor.getContactInfo())
-                .isVerified(marketActor.getIsVerified())
-                .createdAt(marketActor.getCreatedAt())
-                .build();
+        return new MarketActorResponse(
+                marketActor.getId(),
+                marketActor.getUsername(),
+                marketActor.getEmail(),
+                marketActor.getContactInfo(),
+                marketActor.getIsVerified(),
+                marketActor.getCreatedAt()
+        );
     }
 
     public List<MarketActorResponse> convertToMarketActorResponseList(List<MarketActor> marketActors) {
