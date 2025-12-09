@@ -4,6 +4,7 @@ import com.freemarket.platform.dto.request.LoginRequest;
 import com.freemarket.platform.dto.request.RegisterRequest;
 import com.freemarket.platform.dto.response.MarketActorResponse;
 import com.freemarket.platform.entity.MarketActor;
+import com.freemarket.platform.service.AuthService;
 import com.freemarket.platform.service.MarketActorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,12 @@ import java.util.UUID;
 public class MarketActorController {
 
     private final MarketActorService marketActorService;
+    private final AuthService authService;
 
     @Autowired
-    public MarketActorController(MarketActorService marketActorService) {
+    public MarketActorController(MarketActorService marketActorService, AuthService authService) {
         this.marketActorService = marketActorService;
+        this.authService = authService;
     }
 
     // ===== AUTHENTICATION ENDPOINTS =====
@@ -32,7 +35,7 @@ public class MarketActorController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
-            MarketActor newUser = marketActorService.registerMarketActor(request);
+            MarketActor newUser = authService.registerMarketActor(request);
             MarketActorResponse response = marketActorService.convertToMarketActorResponse(newUser);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
@@ -42,7 +45,7 @@ public class MarketActorController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        Optional<MarketActor> user = marketActorService.authenticateAndGetMarketActor(request);
+        Optional<MarketActor> user = authService.authenticateAndGetMarketActor(request);
         if (user.isPresent()) {
             MarketActorResponse response = marketActorService.convertToMarketActorResponse(user.get());
             return ResponseEntity.ok(response);
@@ -53,7 +56,7 @@ public class MarketActorController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<Boolean> authenticate(@Valid @RequestBody LoginRequest request) {
-        boolean isAuthenticated = marketActorService.authenticate(request);
+        boolean isAuthenticated = authService.authenticate(request);
         return ResponseEntity.ok(isAuthenticated);
     }
 
