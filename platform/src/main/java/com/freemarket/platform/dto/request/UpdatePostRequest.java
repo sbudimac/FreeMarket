@@ -3,6 +3,7 @@ package com.freemarket.platform.dto.request;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.Set;
 
@@ -26,6 +27,12 @@ public class UpdatePostRequest {
     private Set<String> tags;
 
     private Boolean isActive;
+
+    @Size(max = 10, message = "Cannot have more than 10 images")
+    private Set<@Pattern(
+            regexp = "^(http|https)://.*\\.(jpg|jpeg|png|gif|webp|bmp)$",
+            message = "Each image URL must be a valid URL ending with jpg, jpeg, png, gif, webp, or bmp"
+    ) String> images;
 
     // Constructors
     public UpdatePostRequest() {}

@@ -14,7 +14,7 @@ import java.util.UUID;
 @Setter
 @JsonPropertyOrder({
         "id", "type", "title", "description", "location",
-        "priceInfo", "tags", "createdAt", "username"
+        "priceInfo", "tags", "images", "createdAt", "username" // UPDATED: Added images
 })
 public class PostSummaryResponse {
     private UUID id;
@@ -24,6 +24,7 @@ public class PostSummaryResponse {
     private String location;
     private String priceInfo;
     private Set<String> tags;
+    private Set<String> images;
     private LocalDateTime createdAt;
     private String username;
 
@@ -62,6 +63,7 @@ public class PostSummaryResponse {
                 ", location='" + location + '\'' +
                 ", priceInfo='" + priceInfo + '\'' +
                 ", tags=" + tags +
+                ", imagesCount=" + (images != null ? images.size() : 0) + // NEW: Include image count
                 ", createdAt=" + createdAt +
                 ", username='" + username + '\'' +
                 '}';

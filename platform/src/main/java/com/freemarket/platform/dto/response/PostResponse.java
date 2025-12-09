@@ -5,6 +5,7 @@ import com.freemarket.platform.entity.PostType;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -32,6 +33,9 @@ public class PostResponse {
     private String contactInfo;
 
     private Set<String> tags;
+
+    private Set<@Pattern(regexp = "^(http|https)://.*\\.(jpg|jpeg|png|gif|webp|bmp)$",
+            message = "Invalid image URL format") String> images;
 
     @NotNull
     private LocalDateTime createdAt;
@@ -62,6 +66,7 @@ public class PostResponse {
         this.updatedAt = updatedAt;
         this.isActive = isActive;
         this.tags = Set.of();
+        this.images = Set.of(); // NEW: Initialize empty set
     }
 
     // Derived fields (computed properties)
@@ -75,6 +80,18 @@ public class PostResponse {
 
     public Boolean hasTags() {
         return tags != null && !tags.isEmpty();
+    }
+
+    public Boolean hasImages() {
+        return images != null && !images.isEmpty();
+    }
+
+    public String getFirstImageUrl() {
+        if (hasImages()) {
+            assert images != null;
+            return images.iterator().next();
+        }
+        return null;
     }
 
     public static PostResponse fromEntity(Post post, MarketActorResponse marketActorResponse) {
@@ -104,6 +121,7 @@ public class PostResponse {
                 ", title='" + title + '\'' +
                 ", user=" + (user != null ? user.getUsername() : "null") +
                 ", isActive=" + isActive +
+                ", imagesCount=" + (images != null ? images.size() : 0) +
                 '}';
     }
 
