@@ -2,31 +2,53 @@ package com.freemarket.platform.controller;
 
 import com.freemarket.platform.dto.request.LoginRequest;
 import com.freemarket.platform.dto.request.RegisterRequest;
+import com.freemarket.platform.dto.response.LoginResponse;
 import com.freemarket.platform.dto.response.MarketActorResponse;
 import com.freemarket.platform.entity.MarketActor;
+import com.freemarket.platform.security.MarketActorUserDetailsService;
+import com.freemarket.platform.security.jwt.JwtService;
 import com.freemarket.platform.service.AuthService;
 import com.freemarket.platform.service.MarketActorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 public class AuthController {
 
     private final MarketActorService marketActorService;
     private final AuthService authService;
+    private final JwtService jwtService;
+    private final MarketActorUserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthController(MarketActorService marketActorService, AuthService authService) {
+    public AuthController(
+            MarketActorService marketActorService,
+            AuthService authService,
+            JwtService jwtService,
+            MarketActorUserDetailsService userDetailsService,
+            AuthenticationManager authenticationManager) {
         this.marketActorService = marketActorService;
         this.authService = authService;
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager;
     }
 
     @GetMapping("/hello")
@@ -47,18 +69,19 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        Optional<MarketActor> user = authService.authenticateAndGetMarketActor(request);
-        if (user.isPresent()) {
-            MarketActorResponse response = marketActorService.convertToMarketActorResponse(user.get());
-            return ResponseEntity.ok(response);
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new MarketActorController.ErrorResponse("Invalid username or password"));
-    }
+        try {
+            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            assert userDetails != null;
+            String token = jwtService.generateToken(userDetails);
+            Set<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toSet());
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<Boolean> authenticate(@Valid @RequestBody LoginRequest request) {
-        boolean isAuthenticated = authService.authenticate(request);
-        return ResponseEntity.ok(isAuthenticated);
+            LoginResponse response = new LoginResponse(token, userDetails.getUsername(), roles);
+            return ResponseEntity.ok(response);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.badRequest().body(new MarketActorController.ErrorResponse(e.getMessage()));
+        }
     }
 }
