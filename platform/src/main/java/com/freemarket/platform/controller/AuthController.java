@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -78,5 +79,10 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             return ResponseEntity.badRequest().body(new MarketActorController.ErrorResponse(e.getMessage()));
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok().body(Map.of("message", "Logged out successfully"));
     }
 }

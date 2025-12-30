@@ -19,7 +19,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public MarketActor registerMarketActor(RegisterRequest registerRequest) {
+    public MarketActor registerMarketActor(RegisterRequest registerRequest) throws IllegalArgumentException {
         validateNewMarketActor(registerRequest.getUsername(), registerRequest.getEmail(), registerRequest.getPassword());
 
         MarketActor marketActor = new MarketActor();
@@ -33,7 +33,7 @@ public class AuthService {
         return marketActorRepository.save(marketActor);
     }
 
-    private void validateNewMarketActor(String username, String email, String password) {
+    private void validateNewMarketActor(String username, String email, String password) throws IllegalArgumentException {
         if (username == null || username.trim().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be null or empty");
         }
