@@ -5,7 +5,6 @@ import com.freemarket.platform.dto.request.RegisterRequest;
 import com.freemarket.platform.dto.response.LoginResponse;
 import com.freemarket.platform.dto.response.MarketActorResponse;
 import com.freemarket.platform.entity.MarketActor;
-import com.freemarket.platform.security.MarketActorUserDetailsService;
 import com.freemarket.platform.security.jwt.JwtService;
 import com.freemarket.platform.service.AuthService;
 import com.freemarket.platform.service.MarketActorService;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,7 +32,6 @@ public class AuthController {
     private final MarketActorService marketActorService;
     private final AuthService authService;
     private final JwtService jwtService;
-    private final MarketActorUserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
 
     @Autowired
@@ -42,12 +39,10 @@ public class AuthController {
             MarketActorService marketActorService,
             AuthService authService,
             JwtService jwtService,
-            MarketActorUserDetailsService userDetailsService,
             AuthenticationManager authenticationManager) {
         this.marketActorService = marketActorService;
         this.authService = authService;
         this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
         this.authenticationManager = authenticationManager;
     }
 

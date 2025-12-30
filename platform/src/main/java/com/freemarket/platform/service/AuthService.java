@@ -1,14 +1,11 @@
 package com.freemarket.platform.service;
 
-import com.freemarket.platform.dto.request.LoginRequest;
 import com.freemarket.platform.dto.request.RegisterRequest;
 import com.freemarket.platform.entity.MarketActor;
 import com.freemarket.platform.repository.MarketActorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -34,17 +31,6 @@ public class AuthService {
         marketActor.getRoles().add("USER");
 
         return marketActorRepository.save(marketActor);
-    }
-
-    public boolean authenticate(LoginRequest loginRequest) {
-        return marketActorRepository.findByUsername(loginRequest.getUsername())
-                .map(actor -> passwordEncoder.matches(loginRequest.getPassword(), actor.getPasswordHash()))
-                .orElse(false);
-    }
-
-    public Optional<MarketActor> authenticateAndGetMarketActor(LoginRequest loginRequest) {
-        return marketActorRepository.findByUsername(loginRequest.getUsername())
-                .filter(actor -> passwordEncoder.matches(loginRequest.getPassword(), actor.getPasswordHash()));
     }
 
     private void validateNewMarketActor(String username, String email, String password) {
