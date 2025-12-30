@@ -2,10 +2,15 @@ package com.freemarket.platform.dto.request;
 
 import com.freemarket.platform.entity.PostType;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@Setter
 public class SearchRequest {
     @NotNull(message = "Post type is required")
     private PostType type;
@@ -55,46 +60,6 @@ public class SearchRequest {
     public static SearchRequestBuilder builder() {
         return new SearchRequestBuilder();
     }
-
-    // Getters and Setters (your existing ones plus new fields)
-    public PostType getType() { return type; }
-    public void setType(PostType type) { this.type = type; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public List<String> getTags() { return tags; }
-    public void setTags(List<String> tags) { this.tags = tags; }
-
-    public String getSearch() { return search; }
-    public void setSearch(String search) { this.search = search; }
-
-    public Integer getPage() { return page; }
-    public void setPage(Integer page) { this.page = page; }
-
-    public Integer getSize() { return size; }
-    public void setSize(Integer size) { this.size = size; }
-
-    public SortField getSortBy() { return sortBy; }
-    public void setSortBy(SortField sortBy) { this.sortBy = sortBy; }
-
-    public SortDirection getSortDirection() { return sortDirection; }
-    public void setSortDirection(SortDirection sortDirection) { this.sortDirection = sortDirection; }
-
-    public LocalDateTime getCreatedAfter() { return createdAfter; }
-    public void setCreatedAfter(LocalDateTime createdAfter) { this.createdAfter = createdAfter; }
-
-    public LocalDateTime getCreatedBefore() { return createdBefore; }
-    public void setCreatedBefore(LocalDateTime createdBefore) { this.createdBefore = createdBefore; }
-
-    public BigDecimal getMinPrice() { return minPrice; }
-    public void setMinPrice(BigDecimal minPrice) { this.minPrice = minPrice; }
-
-    public BigDecimal getMaxPrice() { return maxPrice; }
-    public void setMaxPrice(BigDecimal maxPrice) { this.maxPrice = maxPrice; }
-
-    public Boolean getActiveOnly() { return activeOnly; }
-    public void setActiveOnly(Boolean activeOnly) { this.activeOnly = activeOnly; }
 
     // Builder class
     public static class SearchRequestBuilder {

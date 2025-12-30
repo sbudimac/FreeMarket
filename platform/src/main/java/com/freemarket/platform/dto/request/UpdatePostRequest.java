@@ -1,9 +1,14 @@
 package com.freemarket.platform.dto.request;
 
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.Set;
 
+@Getter
+@Setter
 public class UpdatePostRequest {
     @Size(max = 200)
     private String title;
@@ -23,30 +28,14 @@ public class UpdatePostRequest {
 
     private Boolean isActive;
 
+    @Size(max = 10, message = "Cannot have more than 10 images")
+    private Set<@Pattern(
+            regexp = "^(http|https)://.*\\.(jpg|jpeg|png|gif|webp|bmp)$",
+            message = "Each image URL must be a valid URL ending with jpg, jpeg, png, gif, webp, or bmp"
+    ) String> images;
+
     // Constructors
     public UpdatePostRequest() {}
-
-    // Getters and Setters
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public String getPriceInfo() { return priceInfo; }
-    public void setPriceInfo(String priceInfo) { this.priceInfo = priceInfo; }
-
-    public String getContactInfo() { return contactInfo; }
-    public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
-
-    public Set<String> getTags() { return tags; }
-    public void setTags(Set<String> tags) { this.tags = tags; }
-
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
     @Override
     public String toString() {

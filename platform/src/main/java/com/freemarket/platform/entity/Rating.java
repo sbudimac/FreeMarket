@@ -3,10 +3,14 @@ package com.freemarket.platform.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "rating", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"rater_id", "rated_market_actor_id"})
@@ -21,13 +25,13 @@ public class Rating {
     private MarketActor rater;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rated_market_actor_id", nullable = false) // CHANGED: rated_user_id → rated_market_actor_id
-    private MarketActor ratedMarketActor; // CHANGED: ratedUser → ratedMarketActor
+    @JoinColumn(name = "rated_market_actor_id", nullable = false)
+    private MarketActor ratedMarketActor;
 
     @Column(nullable = false)
     @Min(1)
     @Max(5)
-    private Integer score; // 1-5
+    private Integer score;
 
     @Column(columnDefinition = "TEXT")
     private String comment;
@@ -63,25 +67,6 @@ public class Rating {
     public void updateComment(String newComment) {
         this.comment = newComment;
     }
-
-    // Getters and Setters
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
-    public MarketActor getRater() { return rater; }
-    public void setRater(MarketActor rater) { this.rater = rater; }
-
-    public MarketActor getRatedMarketActor() { return ratedMarketActor; } // CHANGED
-    public void setRatedMarketActor(MarketActor ratedMarketActor) { this.ratedMarketActor = ratedMarketActor; } // CHANGED
-
-    public Integer getScore() { return score; }
-    public void setScore(Integer score) { this.score = score; }
-
-    public String getComment() { return comment; }
-    public void setComment(String comment) { this.comment = comment; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     @Override
     public String toString() {
