@@ -1,6 +1,6 @@
 package com.freemarket.platform.entity;
 
-public enum PostType {
+public enum PostCategory {
     PRODUCT_DEMAND,
     PRODUCT_SUPPLY,
     SERVICE_DEMAND,

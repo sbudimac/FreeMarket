@@ -1,6 +1,6 @@
 package com.freemarket.platform.dto.response;
 
-import com.freemarket.platform.entity.PostType;
+import com.freemarket.platform.entity.PostCategory;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import java.util.UUID;
 })
 public class PostSummaryResponse {
     private UUID id;
-    private PostType type;
+    private PostCategory type;
     private String title;
     private String description;
     private String location;
@@ -31,7 +31,7 @@ public class PostSummaryResponse {
     // Default constructor
     public PostSummaryResponse() {}
 
-    public PostSummaryResponse(UUID id, PostType type, String title, String description, String location,
+    public PostSummaryResponse(UUID id, PostCategory type, String title, String description, String location,
                                String priceInfo, Set<String> tags, LocalDateTime createdAt, String username) {
         this.id = id;
         this.type = type;

@@ -1,6 +1,6 @@
 package com.freemarket.platform.dto.request;
 
-import com.freemarket.platform.entity.PostType;
+import com.freemarket.platform.entity.PostCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 public class CreatePostRequest {
     @NotNull(message = "Post type is required")
-    private PostType type;
+    private PostCategory type;
 
     @NotBlank(message = "Title is required")
     @Size(max = 200, message = "Title cannot exceed 200 characters")

@@ -1,6 +1,6 @@
 package com.freemarket.platform.dto.request;
 
-import com.freemarket.platform.entity.PostType;
+import com.freemarket.platform.entity.PostCategory;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 public class SearchRequest {
     @NotNull(message = "Post type is required")
-    private PostType type;
+    private PostCategory type;
 
     @Size(max = 100, message = "Location must be less than 100 characters")
     private String location;
@@ -65,7 +65,7 @@ public class SearchRequest {
     public static class SearchRequestBuilder {
         private SearchRequest request = new SearchRequest();
 
-        public SearchRequestBuilder type(PostType type) {
+        public SearchRequestBuilder type(PostCategory type) {
             request.setType(type);
             return this;
         }
