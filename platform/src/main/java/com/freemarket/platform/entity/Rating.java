@@ -22,13 +22,11 @@ public class Rating {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    /** Who wrote the rating */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "rater_id", nullable = false)
     @NotNull
     private MarketActor rater;
 
-    /** Who is being rated (ratee) */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ratee_id", nullable = false)
     @NotNull
