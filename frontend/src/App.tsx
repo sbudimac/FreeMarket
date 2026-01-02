@@ -1,9 +1,14 @@
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 function App() {
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <h1 className="text-4xl font-bold text-blue-600">FreeMarket</h1>
-        </div>
+        <><BrowserRouter>
+            <Routes>
+                <Route path="/" element={<div>Home</div>}/>
+                <Route path="/login" element={<div>Login</div>}/>
+            </Routes>
+        </BrowserRouter>
+        </>
     )
 }
 
