@@ -146,10 +146,8 @@ public interface PostRepository extends JpaRepository<Post, UUID>, JpaSpecificat
      * <p>
      * Used when a post detail page is viewed.
      * Executed as an UPDATE query to avoid race conditions.
-     *
-     * @return number of affected rows (should be 1 if post exists)
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
-    int incrementViewCount(@Param("postId") UUID postId);
+    void incrementViewCount(@Param("postId") UUID postId);
 }
