@@ -1,7 +1,7 @@
 package com.freemarket.platform.dto.response;
 
 import com.freemarket.platform.entity.Post;
-import com.freemarket.platform.entity.PostType;
+import com.freemarket.platform.entity.PostCategory;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +18,7 @@ public class PostResponse {
     private UUID id;
 
     @NotNull
-    private PostType type;
+    private PostCategory type;
 
     @NotNull
     private String title;
@@ -54,7 +54,7 @@ public class PostResponse {
     // Constructors
     public PostResponse() {}
 
-    public PostResponse(UUID id, PostType type, String title, String description,
+    public PostResponse(UUID id, PostCategory type, String title, String description,
                         MarketActorResponse user, LocalDateTime createdAt, LocalDateTime updatedAt,
                         Boolean isActive) {
         this.id = id;
@@ -97,7 +97,7 @@ public class PostResponse {
     public static PostResponse fromEntity(Post post, MarketActorResponse marketActorResponse) {
         PostResponse response = new PostResponse();
         response.setId(post.getId());
-        response.setType(post.getType());
+        response.setType(post.getCategory());
         response.setTitle(post.getTitle());
         response.setDescription(post.getDescription());
         response.setLocation(post.getLocation());
