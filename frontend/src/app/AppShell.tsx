@@ -1,10 +1,19 @@
-import {Link, Menu, Sheet} from "lucide-react";
-import {NavLink, Outlet} from "react-router-dom";
-import {SheetContent, SheetTrigger} from "@/components/ui/sheet.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {Separator} from "@radix-ui/react-separator";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@radix-ui/react-dropdown-menu";
-import {Avatar, AvatarFallback} from "@radix-ui/react-avatar";
+import { Menu } from "lucide-react";
+import { Link, NavLink, Outlet } from "react-router-dom";
+
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 
 function NavItem({ to, label }: { to: string, label: string }) {
     return (
