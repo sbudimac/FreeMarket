@@ -1,8 +1,8 @@
 import {createBrowserRouter} from "react-router-dom";
 import AppShell from "./AppShell";
-import HomePage from "@/pages/HomePage";
-import LoginPage from "@/pages/LoginPage";
-import RegisterPage from "@/pages/RegisterPage";
+import HomePage from "@/app/pages/HomePage";
+import LoginPage from "@/app/pages/LoginPage";
+import RegisterPage from "@/app/pages/RegisterPage";
 
 export const router = createBrowserRouter([
     {
