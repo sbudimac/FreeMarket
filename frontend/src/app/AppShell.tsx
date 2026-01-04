@@ -1,0 +1,101 @@
+import {Link, Menu, Sheet} from "lucide-react";
+import {NavLink, Outlet} from "react-router-dom";
+import {SheetContent, SheetTrigger} from "@/components/ui/sheet.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Separator} from "@radix-ui/react-separator";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@radix-ui/react-dropdown-menu";
+import {Avatar, AvatarFallback} from "@radix-ui/react-avatar";
+
+function NavItem({ to, label }: { to: string, label: string }) {
+    return (
+        <NavLink to={to}
+                 className={({ isActive }) =>
+            `text-sm transition-colors ${
+                     isActive ? "text-foreground": "text-muted-foreground hover:text-foreground"
+            }`
+        }
+        >
+            {label}
+        </NavLink>
+    );
+}
+
+export default function AppShell() {
+    return (
+        <div className="min-h-screen bg-background">
+            <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
+                <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+                    <div className="flex items-center gap-3">
+                        <div className="md:hidden">
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="ghost" size="icon" aria-label="Open menu">
+                                        <Menu className="h-5 w-5"/>
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="left" className="w-72">
+                                    <div className="flex items-center justify-between">
+                                        <Link to="/" className="font-semibold">
+                                            FreeMarket
+                                        </Link>
+                                    </div>
+                                    <Separator className="my-4"/>
+                                    <nav className="flex flex-col gap-3">
+                                        <Link to="/" className="text-sm">
+                                            Home
+                                        </Link>
+                                        <Link to="/login" className="text-sm">
+                                            Login
+                                        </Link>
+                                        <Link to="/register" className="text-sm">
+                                            Register
+                                        </Link>
+                                    </nav>
+                                </SheetContent>
+                            </Sheet>
+                        </div>
+
+                        <Link to="/" className="font-semibold tracking-tight">
+                            FreeMarket
+                        </Link>
+
+                        <nav className="hidden items-center gap-6 md:flex">
+                            <NavItem to="/" label="Home"/>
+                        </nav>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <div className="hidden md:flex items-center gap-2">
+                            <Button asChild variant="ghost">
+                                <Link to="/login">Login</Link>
+                            </Button>
+                            <Button asChild>
+                                <Link to="/register">Register</Link>
+                            </Button>
+                        </div>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarFallback>FM</AvatarFallback>
+                                    </Avatar>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                    <Link to="/">Profile (soon)</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem disabled>Logout (soon)</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                </div>
+            </header>
+
+            <main className="mx-auto max-w-6xl px-4 py-8">
+                <Outlet/>
+            </main>
+        </div>
+    );
+}
