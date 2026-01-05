@@ -4,6 +4,7 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Toaster } from "@/components/ui/sonner";
 
 import {
     DropdownMenu,
@@ -103,7 +104,8 @@ export default function AppShell() {
             </header>
 
             <main className="mx-auto max-w-6xl px-4 py-8">
-                <Outlet/>
+                <Outlet />
+                <Toaster richColors />
             </main>
         </div>
     );
