@@ -27,7 +27,7 @@ export default function LoginPage() {
         setIsSubmitting(true);
 
         try {
-            const data = await http<LoginResponse>("/login", {
+            const data = await http<LoginResponse>("/auth/login", {
                 method: "POST",
                 body: JSON.stringify({username, password}),
             });

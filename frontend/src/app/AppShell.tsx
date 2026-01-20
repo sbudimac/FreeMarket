@@ -64,6 +64,9 @@ export default function AppShell() {
                                         <Link to="/register" className="text-sm">
                                             Register
                                         </Link>
+                                        <Link to="/posts" className="text-sm">
+                                            Posts
+                                        </Link>
                                     </nav>
                                 </SheetContent>
                             </Sheet>
@@ -75,6 +78,7 @@ export default function AppShell() {
 
                         <nav className="hidden items-center gap-6 md:flex">
                             <NavItem to="/" label="Home"/>
+                            <NavItem to="/posts" label="Posts"/>
                         </nav>
                     </div>
 

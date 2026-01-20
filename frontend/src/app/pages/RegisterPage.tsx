@@ -21,7 +21,7 @@ export default function RegisterPage() {
         setIsSubmitting(true);
 
         try {
-            await http("/register", {
+            await http("/auth/register", {
                 method: "POST",
                 body: JSON.stringify({ username, email, password }),
             });

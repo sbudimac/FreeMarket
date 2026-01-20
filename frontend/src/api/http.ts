@@ -1,8 +1,6 @@
-export async function http<T>(
-    path: string,
-    options: RequestInit = {}
-): Promise<T> {
-    const token = localStorage.getItem("fm_token");
+export async function http<T>(path: string, options: RequestInit = {}): Promise<T> {
+    const isAuthRoute = path.startsWith("/auth/");
+    const token = isAuthRoute ? null : localStorage.getItem("fm_token");
 
     const res = await fetch(path, {
         headers: {
@@ -15,12 +13,12 @@ export async function http<T>(
 
     if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || `Request failed (${res.status}`);
+        throw new Error(text || `Request failed (${res.status})`);
     }
 
     const contentType = res.headers.get("content-type") ?? "";
     if (!contentType.includes("application/json")) {
-        return (undefined as T);
+        return undefined as T;
     }
-    return (await res.json() as T);
+    return (await res.json()) as T;
 }
