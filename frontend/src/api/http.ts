@@ -1,6 +1,5 @@
 export async function http<T>(path: string, options: RequestInit = {}): Promise<T> {
-    const isAuthRoute = path.startsWith("/auth/");
-    const token = isAuthRoute ? null : localStorage.getItem("fm_token");
+    const token = localStorage.getItem("fm_token");
 
     const res = await fetch(path, {
         headers: {
@@ -20,5 +19,6 @@ export async function http<T>(path: string, options: RequestInit = {}): Promise<
     if (!contentType.includes("application/json")) {
         return undefined as T;
     }
+
     return (await res.json()) as T;
 }

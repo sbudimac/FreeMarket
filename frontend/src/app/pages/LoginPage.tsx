@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import {useAuth} from "@/app/auth.tsx";
 
 type LoginResponse = {
-    token: string;
+    accessToken: string;
     username: string;
     roles: string[];
 };
@@ -32,7 +32,7 @@ export default function LoginPage() {
                 body: JSON.stringify({username, password}),
             });
 
-            login(data.token, data.username);
+            login(data.accessToken, data.username);
 
             toast.success(`Welcome back, ${data.username}!`);
             navigate("/");
