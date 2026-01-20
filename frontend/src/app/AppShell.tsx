@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {useAuth} from "@/app/auth.tsx";
+import {toast} from "sonner";
 
 
 function NavItem({ to, label }: { to: string, label: string }) {
@@ -31,6 +33,8 @@ function NavItem({ to, label }: { to: string, label: string }) {
 }
 
 export default function AppShell() {
+    const { auth, isAuthenticated, logout } = useAuth();
+
     return (
         <div className="min-h-screen bg-background">
             <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
@@ -76,19 +80,30 @@ export default function AppShell() {
 
                     <div className="flex items-center gap-2">
                         <div className="hidden md:flex items-center gap-2">
-                            <Button asChild variant="ghost">
-                                <Link to="/login">Login</Link>
-                            </Button>
-                            <Button asChild>
-                                <Link to="/register">Register</Link>
-                            </Button>
+                            {!isAuthenticated ? (
+                                <>
+                                    <Button asChild variant="ghost">
+                                        <Link to="/login">Login</Link>
+                                    </Button>
+                                    <Button asChild>
+                                        <Link to="/register">Register</Link>
+                                    </Button>
+                                </>
+                            ) : (
+                                <div className="text-sm text-muted-foreground">
+                                    Signed in as <span className="text-foreground font-medium">{auth.username}</span>
+                                </div>
+                            )}
                         </div>
+
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="rounded-full">
                                     <Avatar className="h-8 w-8">
-                                        <AvatarFallback>FM</AvatarFallback>
+                                        <AvatarFallback>
+                                            {auth.username ? auth.username.slice(0, 2).toUpperCase() : "FM"}
+                                        </AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
@@ -96,7 +111,21 @@ export default function AppShell() {
                                 <DropdownMenuItem asChild>
                                     <Link to="/">Profile (soon)</Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem disabled>Logout (soon)</DropdownMenuItem>
+                                {isAuthenticated ? (
+                                    <DropdownMenuItem
+                                        onSelect={() => {
+                                            logout();
+                                            toast.success("Logged out");
+                                        }}
+                                    >
+                                        Logout
+                                    </DropdownMenuItem>
+                                ) : (
+                                    <DropdownMenuItem asChild>
+                                        <Link to="/login">Login</Link>
+                                    </DropdownMenuItem>
+                                )}
+
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -105,8 +134,8 @@ export default function AppShell() {
 
             <main className="mx-auto max-w-6xl px-4 py-8">
                 <Outlet />
-                <Toaster richColors />
             </main>
+            <Toaster richColors />
         </div>
     );
 }

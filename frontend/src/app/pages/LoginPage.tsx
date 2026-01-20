@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {Button} from "@/components/ui/button.tsx";
 import { toast } from "sonner";
+import {useAuth} from "@/app/auth.tsx";
 
 type LoginResponse = {
     token: string;
@@ -19,6 +20,7 @@ export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login } = useAuth();
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -30,8 +32,7 @@ export default function LoginPage() {
                 body: JSON.stringify({username, password}),
             });
 
-            localStorage.setItem("fm_token", data.token);
-            localStorage.setItem("fm_username", data.username);
+            login(data.token, data.username);
 
             toast.success(`Welcome back, ${data.username}!`);
             navigate("/");

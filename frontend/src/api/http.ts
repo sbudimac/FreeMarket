@@ -2,9 +2,12 @@ export async function http<T>(
     path: string,
     options: RequestInit = {}
 ): Promise<T> {
+    const token = localStorage.getItem("fm_token");
+
     const res = await fetch(path, {
         headers: {
             "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...(options.headers ?? {}),
         },
         ...options,
