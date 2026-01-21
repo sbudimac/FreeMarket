@@ -3,8 +3,10 @@ package com.freemarket.platform.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,6 +59,12 @@ public class GlobalExceptionHandler {
                 fieldErrors
         );
         return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler({JpaSystemException.class, DataAccessException.class})
+    public ResponseEntity<ApiError> handleDatabase(Exception ex, HttpServletRequest request) {
+        log.error("Database error on {} {}", request.getMethod(), request.getRequestURI(), ex);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Database error", request, null);
     }
 
     @ExceptionHandler(Exception.class)
