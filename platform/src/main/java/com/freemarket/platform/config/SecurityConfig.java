@@ -1,8 +1,10 @@
 package com.freemarket.platform.config;
 
 import com.freemarket.platform.security.jwt.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -42,8 +44,10 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:4200",
                 "http://localhost:5173",
+                "http://localhost:5174",
                 "http://localhost:3000"
         ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Location"));
@@ -61,6 +65,18 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            res.getWriter().write("{\"message\":\"Authentication required\"}");
+                        })
+                        .accessDeniedHandler((req, res, e) -> {
+                            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            res.getWriter().write("{\"message\":\"Forbidden\"}");
+                        })
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(OPTIONS, "/**").permitAll()

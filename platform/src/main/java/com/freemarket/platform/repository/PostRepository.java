@@ -22,8 +22,15 @@ public interface PostRepository extends JpaRepository<Post, UUID>, JpaSpecificat
      * <p>
      * This avoids LazyInitializationException and N+1 queries.
      */
-    @EntityGraph(attributePaths = {"marketActor"})
-    Optional<Post> findWithMarketActorById(UUID id);
+    @Query("""
+        select distinct p
+        from Post p
+        left join fetch p.marketActor
+        left join fetch p.images
+        left join fetch p.tags
+        where p.id = :id
+    """)
+    Optional<Post> findWithDetailsById(UUID id);
 
     /**
      * Check whether a post exists AND belongs to the given market actor.

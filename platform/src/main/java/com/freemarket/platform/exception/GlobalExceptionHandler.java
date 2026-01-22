@@ -2,8 +2,11 @@ package com.freemarket.platform.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -41,8 +45,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiError> handleBadRequest(IllegalArgumentException exception, HttpServletRequest request, Map<String, String> fieldErrors) {
-        return build(HttpStatus.BAD_REQUEST, exception.getMessage(), request, fieldErrors);
+    public ResponseEntity<ApiError> handleBadRequest(IllegalArgumentException exception, HttpServletRequest request) {
+        return build(HttpStatus.BAD_REQUEST, exception.getMessage(), request, null);
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String message, HttpServletRequest request, Map<String, String> fieldErrors) {
@@ -55,5 +59,21 @@ public class GlobalExceptionHandler {
                 fieldErrors
         );
         return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler({JpaSystemException.class, DataAccessException.class})
+    public ResponseEntity<ApiError> handleDatabase(Exception ex, HttpServletRequest request) {
+        log.error("Database error on {} {}", request.getMethod(), request.getRequestURI(), ex);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Database error", request, null);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleAny(Exception exception, HttpServletRequest request) {
+        log.error("Unhandled exception for {} {}", request.getMethod(), request.getRequestURI(), exception);
+
+        return build(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal server error",
+                request,
+                null);
     }
 }

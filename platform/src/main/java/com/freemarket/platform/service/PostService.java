@@ -35,9 +35,9 @@ public class PostService {
     }
 
     @Transactional
-    public UUID createPost(UUID marketActorId, PostCreateRequest request) {
-        MarketActor marketActor = marketActorRepository.findById(marketActorId)
-                .orElseThrow(() -> new NotFoundException("MarketActor with id: " + marketActorId + "not found"));
+    public UUID createPost(String username, PostCreateRequest request) {
+        MarketActor marketActor = marketActorRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("MarketActor with username: " + username + "not found"));
 
         Post post = new Post();
         post.setMarketActor(marketActor);
@@ -71,7 +71,7 @@ public class PostService {
 
     @Transactional
     public PostDetailsDto getPost(UUID postId, boolean incrementView) {
-        Post post = postRepository.findWithMarketActorById(postId)
+        Post post = postRepository.findWithDetailsById(postId)
                 .orElseThrow(() -> new NotFoundException("Post with id: " + postId + "not found"));
 
         if (incrementView) {
@@ -118,7 +118,7 @@ public class PostService {
 
     @Transactional
     public PostDetailsDto patchPost(UUID marketActorId, UUID postId, PostPatchRequest request) {
-        Post post = postRepository.findWithMarketActorById(postId)
+        Post post = postRepository.findWithDetailsById(postId)
                 .orElseThrow(() -> new NotFoundException("Post with id: " + postId + "not found"));
 
         if (!post.getMarketActor().getId().equals(marketActorId)) {

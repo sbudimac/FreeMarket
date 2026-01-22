@@ -30,8 +30,8 @@ public class PostController {
 
     @PostMapping
     public IdResponse create(@Valid @RequestBody PostCreateRequest request, Authentication auth) {
-        UUID marketActorId = CurrentUserRetreiver.getCurrentUserID(auth);
-        UUID id = postService.createPost(marketActorId, request);
+        String username = auth.getName();
+        UUID id = postService.createPost(username, request);
         return new IdResponse(id);
     }
 

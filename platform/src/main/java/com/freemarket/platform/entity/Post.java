@@ -54,12 +54,10 @@ public class Post {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)
-    @NotNull
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    @NotNull
     private LocalDateTime updatedAt;
 
     @Column(name = "expires_at")
