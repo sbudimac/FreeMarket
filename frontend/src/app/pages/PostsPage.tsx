@@ -4,12 +4,12 @@ import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPosts, type Post } from "@/api/postsApi";
-import {useAuth} from "@/app/auth.tsx";
-import {Button} from "@/components/ui/button.tsx";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/app/auth";
+import { getPosts, type PostListItem, type Page } from "@/api/postsApi";
 
 export default function PostsPage() {
-    const [posts, setPosts] = useState<Post[] | null>(null);
+    const [page, setPage] = useState<Page<PostListItem> | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const { isAuthenticated } = useAuth();
@@ -20,8 +20,8 @@ export default function PostsPage() {
         async function load() {
             try {
                 setError(null);
-                const data = await getPosts();
-                if (!cancelled) setPosts(data);
+                const data = await getPosts({ page: 0, size: 20 });
+                if (!cancelled) setPage(data);
             } catch (err) {
                 const msg = err instanceof Error ? err.message : "Failed to load posts";
                 if (!cancelled) setError(msg);
@@ -30,11 +30,12 @@ export default function PostsPage() {
         }
 
         load();
-
         return () => {
             cancelled = true;
         };
     }, []);
+
+    const posts = page?.content ?? [];
 
     return (
         <div className="space-y-4">
@@ -45,6 +46,7 @@ export default function PostsPage() {
                         Browse what people are sharing on FreeMarket.
                     </p>
                 </div>
+
                 {isAuthenticated && (
                     <Button asChild>
                         <Link to="/posts/new">Create post</Link>
@@ -52,7 +54,7 @@ export default function PostsPage() {
                 )}
             </div>
 
-            {posts === null && !error && (
+            {page === null && !error && (
                 <div className="space-y-3">
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-24 w-full" />
@@ -65,13 +67,11 @@ export default function PostsPage() {
                     <CardHeader>
                         <CardTitle>Could not load posts</CardTitle>
                     </CardHeader>
-                    <CardContent className="text-sm text-muted-foreground">
-                        {error}
-                    </CardContent>
+                    <CardContent className="text-sm text-muted-foreground">{error}</CardContent>
                 </Card>
             )}
 
-            {posts && posts.length === 0 && (
+            {page && posts.length === 0 && (
                 <Card>
                     <CardHeader>
                         <CardTitle>No posts yet</CardTitle>
@@ -82,16 +82,32 @@ export default function PostsPage() {
                 </Card>
             )}
 
-            {posts && posts.length > 0 && (
+            {page && posts.length > 0 && (
                 <div className="grid gap-4">
                     {posts.map((p) => (
                         <Link key={p.id} to={`/posts/${p.id}`} className="block">
                             <Card className="transition-shadow hover:shadow-md">
-                                <CardHeader>
+                                <CardHeader className="space-y-1">
                                     <CardTitle className="text-lg">{p.title}</CardTitle>
+                                    <div className="text-xs text-muted-foreground">
+                                        {p.category}
+                                        {p.location ? ` • ${p.location}` : ""}
+                                        {p.priceInfo ? ` • ${p.priceInfo}${p.currency ? " " + p.currency : ""}` : ""}
+                                    </div>
                                 </CardHeader>
+
                                 <CardContent className="text-sm text-muted-foreground">
-                                    {p.description ? p.description : "No description"}
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div>
+                                            <div className="text-xs">
+                                                {p.owner?.username ? `by ${p.owner.username}` : ""}
+                                            </div>
+                                            <div className="text-xs">
+                                                {p.createdAt ? new Date(p.createdAt).toLocaleString() : ""}
+                                            </div>
+                                        </div>
+                                        <div className="text-xs">{p.status}</div>
+                                    </div>
                                 </CardContent>
                             </Card>
                         </Link>
