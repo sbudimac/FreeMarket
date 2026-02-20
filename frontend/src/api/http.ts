@@ -1,7 +1,7 @@
 import {toast} from "sonner";
 
 function redirectToLogin() {
-    window.location.assign("/auth/login");
+    window.location.assign("/login");
 }
 
 function clearAuth() {

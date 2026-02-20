@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,8 @@ public class AuthController {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
             assert userDetails != null;
-            String token = jwtService.generateToken(userDetails);
+            MarketActor marketActor = marketActorService.getByUsername(userDetails.getUsername());
+            String token = jwtService.generateToken(userDetails, marketActor.getId());
             Set<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toSet());
