@@ -28,11 +28,6 @@ export async function http<T>(path: string, options: RequestInit = {}): Promise<
     }
 
     if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || `Request failed (${res.status})`);
-    }
-
-    if (!res.ok) {
         const contentType = res.headers.get("content-type") ?? "";
         if (contentType.includes("application/json")) {
             const body = await res.json().catch(() => null);
