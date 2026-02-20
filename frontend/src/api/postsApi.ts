@@ -91,6 +91,20 @@ export type PostDetails = {
     owner: UserPublic;
 };
 
+export type UpdatePostRequest = {
+    category?: PostCategory;
+    title?: string;
+    description?: string;
+    location?: string;
+    priceInfo?: string;
+    contactInfo?: string;
+    currency?: string;
+    condition?: PostCondition;
+    tags?: string[];
+    images?: string[];
+    thumbnailUrl?: string;
+};
+
 export async function getPosts(params?: { page?: number; size?: number }) {
     const page = params?.page ?? 0;
     const size = params?.size ?? 20;
@@ -106,5 +120,18 @@ export async function createPost(payload: CreatePostRequest): Promise<IdResponse
     return http<IdResponse>("/api/posts", {
         method: "POST",
         body: JSON.stringify(payload),
+    });
+}
+
+export async function updatePost(id: string, payload: UpdatePostRequest): Promise<PostDetails> {
+    return http<PostDetails>(`/api/posts/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function deletePost(id: string): Promise<void> {
+    return http<void>(`/api/posts/${id}`, {
+        method: "DELETE",
     });
 }

@@ -1,7 +1,7 @@
 import {toast} from "sonner";
 
 function redirectToLogin() {
-    window.location.assign("/auth/login");
+    window.location.assign("/login");
 }
 
 function clearAuth() {
@@ -25,11 +25,6 @@ export async function http<T>(path: string, options: RequestInit = {}): Promise<
         toast.error("Session expired. Please log in again.");
         redirectToLogin();
         throw new Error("Unauthorized");
-    }
-
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || `Request failed (${res.status})`);
     }
 
     if (!res.ok) {

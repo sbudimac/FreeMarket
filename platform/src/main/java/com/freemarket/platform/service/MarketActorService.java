@@ -38,6 +38,12 @@ public class MarketActorService {
         return marketActorRepository.findByUsername(username);
     }
 
+    // Internal use only — no security check, called during login
+    public MarketActor getByUsername(String username) {
+        return marketActorRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+
     public Optional<MarketActor> findByEmail(String email) {
         return marketActorRepository.findByEmail(email);
     }
