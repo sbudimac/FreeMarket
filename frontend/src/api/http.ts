@@ -1,5 +1,7 @@
 import {toast} from "sonner";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+
 function redirectToLogin() {
     window.location.assign("/login");
 }
@@ -11,7 +13,7 @@ function clearAuth() {
 export async function http<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem("fm_token");
 
-    const res = await fetch(path, {
+    const res = await fetch(`${BASE_URL}${path}`, {
         headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
