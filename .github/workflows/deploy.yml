@@ -1,0 +1,82 @@
+name: Deploy FreeMarket Backend
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  AWS_REGION: eu-west-1
+  ECR_REPOSITORY: freemarket-backend
+  CONTAINER_NAME: freemarket-backend
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # ── Get the code ───────────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Log in to AWS ──────────────────────────────────────────────
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ── Log Docker in to ECR ──────────────────────────────────────
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ── Build and push image to ECR ───────────────────────────────
+      - name: Build, tag, and push image to ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./platform
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # ── SSH into EC2 and redeploy ─────────────────────────────────
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Log in to ECR from EC2
+            aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 079554985186.dkr.ecr.eu-west-1.amazonaws.com
+
+            # Pull the latest image
+            docker pull 079554985186.dkr.ecr.eu-west-1.amazonaws.com/freemarket-backend:latest
+
+            # Stop and remove the old container
+            docker stop freemarket-backend || true
+            docker rm freemarket-backend || true
+
+            # Run the new container
+            docker run -d \
+              --name freemarket-backend \
+              --restart unless-stopped \
+              -p 8080:8080 \
+              -e POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} \
+              -e POSTGRES_PORT=5432 \
+              -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+              -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+              -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+              -e SECURITY_JWT_SECRET=${{ secrets.SECURITY_JWT_SECRET }} \
+              -e SECURITY_JWT_EXPIRATION_MS=3600000 \
+              079554985186.dkr.ecr.eu-west-1.amazonaws.com/freemarket-backend:latest
+
+            # Clean up old unused images to save disk space
+            docker image prune -f
