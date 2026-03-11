@@ -45,7 +45,8 @@ public class SecurityConfig {
                 "http://localhost:4200",
                 "http://localhost:5173",
                 "http://localhost:5174",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "http://freemarket-frontend.s3-website-eu-west-1.amazonaws.com"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
