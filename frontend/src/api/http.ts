@@ -34,9 +34,9 @@ export async function http<T>(path: string, options: RequestInit = {}): Promise<
         if (contentType.includes("application/json")) {
             const body = await res.json().catch(() => null);
             const msg =
-                body?.message ??
-                body?.error ??
-                `Request failed (${res.status})`;
+                body?.fieldErrors
+                    ? Object.values(body.fieldErrors).join(", ")
+                    : body?.message ?? body?.error ?? `Request failed (${res.status})`;
             throw new Error(msg);
         } else {
             const text = await res.text().catch(() => "");
