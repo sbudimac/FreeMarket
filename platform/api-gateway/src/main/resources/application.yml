@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Auth routes — no JWT required
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/auth/**
+
+        # Post routes — JWT required
+        - id: post-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/posts/**
+          filters:
+            - AuthFilter
+
+        # Rating routes — JWT required
+        - id: rating-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/ratings/**
+          filters:
+            - AuthFilter
+
+security:
+  jwt:
+    secret: ${SECURITY_JWT_SECRET}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
