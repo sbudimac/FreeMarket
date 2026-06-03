@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "freemarket.fullname" . }}-config
+  labels:
+    {{- include "freemarket.labels" . | nindent 4 }}
+data:
+  POSTGRES_HOST: {{ include "freemarket.postgresql.host" . | quote }}
+  POSTGRES_PORT: {{ .Values.config.postgresPort | quote }}
+  POSTGRES_DB: {{ .Values.config.postgresDb | quote }}
+  SECURITY_JWT_EXPIRATION_MS: {{ .Values.config.jwtExpirationMs | quote }}

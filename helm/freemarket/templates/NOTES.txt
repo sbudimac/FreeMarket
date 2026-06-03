@@ -1,0 +1,28 @@
+FreeMarket has been deployed.
+
+{{- if .Values.ingress.enabled }}
+
+The application is available at:
+  http://{{ .Values.ingress.host }}
+
+{{- else if eq .Values.service.type "NodePort" }}
+
+Get the application URL (Minikube):
+  minikube service {{ include "freemarket.fullname" . }} --url
+
+{{- else }}
+
+Forward the backend locally:
+  kubectl port-forward svc/{{ include "freemarket.fullname" . }} 8080:{{ .Values.service.port }}
+  Open: http://localhost:8080
+
+{{- end }}
+
+Swagger UI: <backend-url>/swagger-ui.html
+
+{{- if .Values.postgresql.enabled }}
+
+PostgreSQL is running as a StatefulSet at:
+  {{ include "freemarket.postgresql.fullname" . }}:5432
+
+{{- end }}

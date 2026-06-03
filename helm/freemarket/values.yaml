@@ -1,0 +1,42 @@
+replicaCount: 1
+
+image:
+  repository: freemarket-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+# Non-sensitive config — written into a ConfigMap
+config:
+  postgresPort: "5432"
+  postgresDb: freemarket
+  jwtExpirationMs: "3600000"
+  # Used only when postgresql.enabled=false
+  postgresHost: ""
+
+# Sensitive credentials — written into a Secret
+# Override all three for every non-dev environment
+credentials:
+  postgresUser: admin
+  postgresPassword: password
+  jwtSecret: "CHANGE_ME_base64_hmac_secret"
+
+# Local PostgreSQL StatefulSet (disable for production and point config.postgresHost at an external DB)
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "16"
+  storage: 1Gi
+  storageClass: standard
+
+resources: {}
+
+ingress:
+  enabled: false
+  className: ""
+  host: freemarket.local
+  annotations: {}

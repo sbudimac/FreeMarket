@@ -1,0 +1,10 @@
+apiVersion: v2
+name: freemarket
+description: FreeMarket marketplace — Spring Boot backend with optional local PostgreSQL
+type: application
+version: 0.1.0
+appVersion: "0.0.1-SNAPSHOT"
+keywords:
+  - marketplace
+  - spring-boot
+  - java
