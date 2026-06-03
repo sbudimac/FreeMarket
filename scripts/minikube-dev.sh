@@ -10,6 +10,7 @@ set -euo pipefail
 RELEASE=freemarket
 CHART=./helm/freemarket
 VALUES=./helm/freemarket/values-local.yaml
+SECRETS=./helm/freemarket/values-local.secrets.yaml
 NAMESPACE=default
 
 # ── 1. Start Minikube if it is not already running ───────────────────────────
@@ -26,10 +27,18 @@ eval "$(minikube docker-env)"
 docker build -t freemarket-backend:latest ./platform
 
 # ── 3. Install or upgrade the Helm release ───────────────────────────────────
+if [[ ! -f "${SECRETS}" ]]; then
+  echo "✖ Missing ${SECRETS}"
+  echo "  Copy the example and fill in your credentials:"
+  echo "    cp helm/freemarket/values-local.secrets.yaml.example ${SECRETS}"
+  exit 1
+fi
+
 echo "▶ Deploying Helm release '${RELEASE}'…"
 helm upgrade --install "${RELEASE}" "${CHART}" \
   --namespace "${NAMESPACE}" \
   -f "${VALUES}" \
+  -f "${SECRETS}" \
   --wait \
   --timeout 3m
 

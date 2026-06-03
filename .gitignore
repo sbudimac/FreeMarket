@@ -93,3 +93,8 @@ testem.log
 # ==================== #
 *.db
 *.sqlite
+
+# ==================== #
+# Helm secrets         #
+# ==================== #
+helm/**/*.secrets.yaml

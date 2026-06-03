@@ -1,18 +1,21 @@
-# Overrides for local Minikube development.
-# Usage: helm upgrade --install freemarket ./helm/freemarket -f ./helm/freemarket/values-local.yaml
+# Non-sensitive Minikube overrides — safe to commit.
+# Credentials live in values-local.secrets.yaml (gitignored).
 #
-# Build the image into Minikube's Docker daemon first:
-#   eval $(minikube docker-env)
-#   docker build -t freemarket-backend:latest ./platform
+# First-time setup:
+#   cp helm/freemarket/values-local.secrets.yaml.example \
+#      helm/freemarket/values-local.secrets.yaml
+#   # fill in your local credentials
+#
+# Deploy:
+#   helm upgrade --install freemarket ./helm/freemarket \
+#     -f ./helm/freemarket/values-local.yaml \
+#     -f ./helm/freemarket/values-local.secrets.yaml \
+#     --wait
+#
+# Or just run: ./scripts/minikube-dev.sh
 
 image:
   pullPolicy: Never   # use the locally-built image; never pull from a registry
 
 service:
   type: NodePort      # expose via minikube service instead of port-forward
-
-credentials:
-  postgresUser: admin
-  postgresPassword: password
-  # Keep this in sync with what DevUserSeeder expects; can be any valid base64 HMAC key
-  jwtSecret: "TCb3VsPYPSOt9DZ+rESxPcQ2FuW5fceaxycVShgJsV1inoFrjhQ0MnWH4YvDMzNJm3Cn0QNNVjunskiVA=="
